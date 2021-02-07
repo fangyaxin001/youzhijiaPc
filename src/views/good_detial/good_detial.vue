@@ -1,6 +1,7 @@
+
 <template>
   <div>
-    <!-- 顶部组件 -->
+          <!-- 顶部组件 -->
     <homeTop></homeTop>
     <!-- 搜索组件 -->
     <loginHead @searchName="searchName" :seatch="true"></loginHead>
@@ -8,21 +9,14 @@
     <navpage  @searchName="searchName"></navpage>
     <!-- 悬浮组件 -->
     <fielxRight></fielxRight>
-    <!-- 搜索结果 -->
-    <searchResult v-if="homeIndex == 0" :searchValue="searchVale" ></searchResult>
-    <!-- 首页 -->
-    <home v-if="homeIndex == 1"></home>
-    <!-- 好货精选 -->
-    <goodSelection v-if="homeIndex ==2"></goodSelection>
-    <!-- 常用清单 -->
-    <inventoryAgain v-if="homeIndex ==3"></inventoryAgain> 
+    <!-- 商品详情 -->
+    <goodDetial></goodDetial>
+    
     <!-- 底部组件 -->
     <bottombei></bottombei>
   </div>
 </template>
-
 <script>
-// @ is an alias to /src
 import homeTop from "@/components/homeTop/homeTop.vue"; //顶部组件
 import loginHead from "@/components/loginHead/loginHead.vue"; //搜索组件
 import bottombei from "@/components/bottomTitle/bottomBei.vue"; //底部组件
@@ -32,9 +26,12 @@ import home from "@/components/home/home.vue"; //首页
 import searchResult from "@/components/home/searchResult.vue"; //搜索结果
 import goodSelection from "@/components/home/GoodSelection.vue"; //顶部组件
 import inventoryAgain from "@/components/home/inventoryAgain.vue"; //顶部组件
+import goodDetial from "@/components/goodsDetial/goodsDetial.vue"; //商品详情
 
 export default {
-  name: "Home",
+  data() {
+    return {};
+  },
   components: {
     homeTop,
     loginHead,
@@ -45,40 +42,23 @@ export default {
     searchResult,
     goodSelection,
     inventoryAgain,
-  },
-  data() {
-    return {
-      searchVale: "", //接收的搜索值
-      homeIndex: 1, //控制组件
-    };
+    goodDetial
   },
   methods: {
-    // 接受搜索的结果
-    searchName(e) {
-      console.log(e);
-      this.homeIndex = e.index;
-      this.searchVale = e.value;
-    },
-   
+      searchName(e){
+          console.log(e);
+          this.$router.push({
+              path:"/",
+              query:{
+                  index :e.index,
+                  value:e.value
+              }
+          })
+        //   this.$router.query.index
+      }
   },
-  created() {
-    console.log(this.$route.query.index);
-    if(this.$route.query.index){
-       this.homeIndex = this.$route.query.index;
-       this.searchVale = this.$route.query.value;
-    }
-    this.USER_INFO = JSON.parse(localStorage.getItem("USER_INFO"));
-    // console.log(this.USER_INFO)
-    console.log(this.USER_INFO);
-    // if (this.USER_INFO == null) {
-    //   console.log(22);
-    //   return this.$router.push({
-    //     path: "/login",
-    //   });
-    // }
-  },
+  created() {},
 };
 </script>
 <style lang="less">
-
 </style>

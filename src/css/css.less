@@ -1,0 +1,87 @@
+// 弹性布局
+ 
+//  两边对齐
+.flex_sb {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+//  居中对齐
+  .flex_c {
+  display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+//  两边留空对齐
+.flex_sa {
+  display: flex;
+    justify-content: space-around;
+    align-items: center;
+} 
+// 尾部对齐
+.flex_fe {
+  display: flex;
+    justify-content: flex-end;
+}
+
+// 开头对齐
+.flex_fs {
+  display: flex;
+    justify-content: flex-start/*  */;
+}
+// 自动换行
+.felx_wap{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+/* 通用css */
+
+/*
+ * 内容单行显示
+ */
+ .ellipsis {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  
+  /*
+   * 内容两行显示
+   */
+  .text-line {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  
+  /**
+   * flex布局row
+   */
+  .flex-row-between {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+  }
+  
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .flex-column-between {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .flex-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
