@@ -22,7 +22,6 @@ export default {
            this.myIndex = index
            console.log(index);
           this.$emit('searchName', {index:1+index})
-
          }
     },
     created(){

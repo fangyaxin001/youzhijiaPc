@@ -4,10 +4,10 @@
     <div class="left_box">
       <ul>
         <li v-for="(item, index) in dataList" :key="index">
-          <div v-show="index == 0">  <main v-show="leftIndex<6"></main> <p :class="leftIndex<6 ? 'style_color':''">我的订单</p> </div>
-          <div v-show="index == 6">  <main v-show="leftIndex>5 && leftIndex<8"></main> <p :class="leftIndex>5 && leftIndex<8 ? 'style_color':''" >我的优惠</p></div>
-          <div v-show="index == 8">  <main v-show="leftIndex>7 && leftIndex<11"></main> <p >我的服务</p></div>
-          <div v-show="index == 11"> <main v-show="leftIndex>10 && leftIndex<12"></main> <p >我的服务</p></div>
+          <div v-show="index == 0">  <main v-show="leftIndex<7 || styleFlag"></main> <p :class="leftIndex<7 ? 'style_color':styleFlag?'style_color':''">我的订单</p> </div>
+          <div v-show="index == 7">  <main v-show="leftIndex>6 && leftIndex<9"></main> <p :class="leftIndex>6 && leftIndex<9 ? 'style_color':''" >我的优惠</p></div>
+          <div v-show="index == 9">  <main v-show="leftIndex>8 && leftIndex<12"></main> <p :class="leftIndex>8 && leftIndex<12 ? 'style_color':''"  >我的服务</p></div>
+          <div v-show="index == 12"> <main v-show="leftIndex>11 && leftIndex<13"></main> <p :class="leftIndex>11 && leftIndex<13 ? 'style_color':''" >我的消息</p></div>
           <p class="p_li" :class="leftIndex==index? 'style_color':''" @click="getIndex(index)">{{ item }}</p>
         </li>
       </ul>
@@ -16,7 +16,7 @@
 </template>
 <script>
 export default {
-    props:["showIndex"],
+    props:["showIndex","styleFlag"],
   data() {
     return {
       dataList: [
@@ -24,6 +24,7 @@ export default {
         "待付款",
         "待发货",
         "待收货",
+        "待评价",
         "已完成",
         "退款/售后",
         "优惠券",
@@ -41,8 +42,37 @@ export default {
         console.log(index);
           this.leftIndex=index
           this.$emit('leftIndex', index)
-          if(index===6 || index===7){
-            this.$router.push("/coupon")
+           if(index>=0 && index<=6){
+            this.$router.push({
+              path:"/my_order",
+              query:{
+                idx:index
+              }
+            })
+          }else if(index===7 || index===8){
+            console.log(1111);
+            this.$router.push({
+              path:"/coupon",
+              query:{
+                idx:index
+              }
+            })
+          }else if(index>=9 && index<=11){
+            this.$router.push({
+              path:"/footprint",
+              query:{
+                idx:index
+              }
+            })
+          }else if(index==12){
+           var indexFlag={idx:index,flag:true}
+             this.$emit('leftIndex', indexFlag)
+            this.$router.push({
+              path:"/my_message",
+              query:{
+                idx:index,
+              }
+            })
           }
       }
   },
@@ -51,7 +81,9 @@ showIndex(newVal,oldVal){
     this.leftIndex = newVal
 }
   },
- 
+   mounted(){
+    this.leftIndex = this.showIndex
+   },
   created() {},
 };
 </script>

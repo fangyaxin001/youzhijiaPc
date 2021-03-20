@@ -9,6 +9,7 @@
           type="number"
           v-model="phone"
           placeholder="+86 手机号"
+          @input="loginLength"
         ></el-input>
       </div>
       <div class="flex_c re_input">
@@ -17,14 +18,20 @@
           <span class="yanz" slot="suffix" @click="getMa" v-if="passgei"
             >获取验证码</span
           >
-          <span class="yanz" slot="suffix" v-else
-            > <span style="color: red">{{ num }}</span> 秒可重新获取</span
+          <span class="yanz" slot="suffix" v-else>
+            <span style="color: red">{{ num }}</span> 秒可重新获取</span
           ></el-input
         >
       </div>
       <div class="flex_c re_input">
-        <p>登录密码</p>
-        <el-input v-model="password" placeholder="密码"></el-input>
+        <p> 设置新密码</p>
+        <el-input
+          v-model="password"
+          type="password"
+          :show-password="false" 
+          placeholder="密码"
+          maxlength="24"
+        ></el-input>
       </div>
       <div class="flex_c re_input">
         <p></p>
@@ -53,24 +60,64 @@ export default {
     };
   },
   methods: {
-    forgetTo() {},
+    // 限制登录手机号输入长度
+      loginLength(e) {
+        if (e.length > 12) {
+          this.phone = this.phone.slice(0, 13)
+
+        }
+      },
+    forgetTo() {
+      if (this.phone == "")
+        return this.$message.error("手机号不能为空，请输入手机号");
+      if (!/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,12}$/.test(this.password))
+        return this.$message.error("请设置密码为6-12位字母加数字的组合");
+      this.$require
+        .post(this.$inter.common.forgetPassword, {
+          phone: this.phone,
+          code: this.vftCode,
+          pass: this.password,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) {
+            this.$router.push("/login");
+            this.$message.success(res.msg);
+          } else {
+            this.$message.error(res.msg);
+          }
+        });
+    },
     getMa() {
       if (this.phone == "")
         return this.$message.error("手机号不能为空，请输入手机号");
-
-      this.$message.success("验证码发送成功");
-      this.passgei = false;
-      this.num = 60;
-      this.countDown();
+      console.log(this.phone);
+      // 验证码
+      this.$require
+        .post(this.$inter.common.isCode, {
+          phone: this.phone,
+          type: 1,
+        })
+        .then((res) => { 
+          console.log(res);
+          if (res.code == 1) {
+            this.$message.success("验证码发送成功");
+            this.passgei = false;
+            this.num = 60;
+          this.countDown();
+          } else {
+            this.$message.error(res.msg);
+          }
+        });
     },
     // 倒计时
     countDown() {
       console.log(11);
       var timer = setInterval(() => {
         this.num--;
-        if (this.num == 0) {
+        if (this.num <= 0) {
           clearInterval(timer);
-          this.risignFilg = true;
+           timer = null;
           this.passgei = true;
         }
       }, 1000);
@@ -82,7 +129,7 @@ export default {
 <style lang="less">
 .reg_box {
   width: 1200px;
-  height: 700px;
+  height: 680px;
   margin: auto;
   margin-top: 30px;
   background-color: #ffffff;

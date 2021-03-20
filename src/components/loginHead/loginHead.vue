@@ -15,10 +15,11 @@
 </template>
 <script>
 export default {
-  props: ["setLog", "seatch"],
+  props: ["setLog", "seatch",'clear'],
   data() {
     return {
       searchValue: "",
+     
     };
   },
   methods: {
@@ -32,9 +33,22 @@ export default {
     },
     // 点击搜索搜索
     searchGo() {
-      console.log(11);
-         this.$emit('searchName', {value:this.searchValue,index:0})
+      console.log(11); 
+            this.$emit('searchName', {value:this.searchValue,index:0}) 
+
     },
+  },
+  watch:{
+        clear(newVal,oldVal){
+          console.log(newVal);
+          if(newVal){
+            this.searchValue =  ''
+          }
+        }
+  },
+  mounted(){
+  
+     
   },
   created() {},
 };
@@ -58,14 +72,23 @@ export default {
     }
   }
 }
+
 .ceach_input {
   width: 650px;
   margin-right: 300px;
+  /deep/.el-input-group__append, .el-input-group__prepend{
+     border-top-right-radius: 8px;
+     border-bottom-right-radius: 8px;
+  }
+ 
   /deep/.el-input__inner,
   .el-input__inner:focus,
   .el-input__inner:hover {
     border: #ff61a1 1px solid;
     outline: none;
+    border-top-left-radius: 8px;
+     border-bottom-left-radius: 8px;
+     overflow: hidden;
   }
   // /deep/.el-input__inner:focus  {
   //   outline: none;

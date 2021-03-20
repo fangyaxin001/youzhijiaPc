@@ -11,19 +11,19 @@
             <div style="big_img">
               <img
                 style="width: 420px; height: 420px; object-fit: unset"
-                :src="big_img"
+                :src="url+big_img"
                 alt=""
               />
             </div>
             <div class="swper_small">
               <div
                 class="small_img"
-                v-for="(item, index) in imgPath"
+                v-for="(item, index) in goodsData.img_url"
                 :key="index"
               >
                 <img
                   style="width: 60px; height: 60px; object-fit: unset"
-                  :src="item"
+                  :src="url+item"
                   alt=""
                   @click="getImg(index)"
                 />
@@ -32,26 +32,26 @@
           </div>
           <!-- 选择商品规格和数量 -->
           <div class="spec_box">
-            <p class="top_title">精品胡萝卜500g 新鲜蔬菜 萝卜 生鲜超市</p>
+            <p class="top_title">{{goodsData.name}}</p>
             <div class="flex_sb money">
               <div class="left_flex">
                 <div class="flex_sb">
                   <p class="p1">价格</p>
-                  <p class="p2"><s>￥998</s></p>
+                  <p class="p2"><s>₱{{goodsData.yprice}}</s></p>
                 </div>
-                <div class="flex_sb">
-                  <p class="p1">促销价</p>
-                  <p class="p3">￥558</p>
+                <div class="flex_sb"> 
+                  <p class="p1" style="margin-top: 0;">促销价</p>
+                  <p class="p3" style="margin-top: 0;">₱{{goodsData.xprice}}</p>
                 </div>
               </div>
               <div class="flex_sb right">
                 <div>
-                  <p class="m1">23</p>
-                  <p>好评</p>
+                  <p class="m1">{{goodsData.nice}}</p>
+                  <p style="margin-top: 3px;">好评</p>
                 </div>
                 <div class="riget_two">
-                  <p class="m1">562</p>
-                  <p>购买</p>
+                  <p class="m1">{{goodsData.sales}}</p>
+                  <p style="margin-top: 3px;">购买</p>
                 </div>
               </div>
             </div>
@@ -59,15 +59,17 @@
             <div class="cen_box">
               <div class="flex_sb yun_box">
                 <p class="p1">运费</p>
-                <p class="p2"><s>包邮</s></p>
+                <p class="p2" v-if="goodsData.cost==0"><s>包邮</s></p>
+                <p class="p2" v-else>{{goodsData.cost}}</p>
               </div>
             </div>
             <!-- 颜色 -->
             <div class="flex_sb color_box">
-              <p class="p1">颜色</p>
+              <p class="p1">规格</p>
               <div class="wei_list">
-                <p>红色</p>
-                <p>蓝色</p>
+                <p :class="guigeIndex == index3 ? 'phover':''" class="ellipsis" v-for="(item3,index3) in goodsData.size" :key="index3" @click="guigeClick(item3,index3)">
+                  {{item3.note}}<img v-show= "guigeIndex == index3" class="abxuan" src="../../assets/image/xuan.png" alt="">  </p>
+                 
               </div>
             </div>
             <!-- 数量 -->
@@ -77,8 +79,9 @@
                 <el-input-number
                   v-model="num"
                   @change="handleChange"
+                  :precision="0"
                   :min="1"
-                  :max="10"
+                  :max="guigeTotal"
                   label="描述文字"
                 ></el-input-number>
               </div>
@@ -88,7 +91,7 @@
               <div class="tow2" @click="joinCart">加入购物车</div>
             </div>
             <div class="qing_box">
-              <p class="pw" v-if="getDetailed">+添加值清单</p>
+              <p class="pw" v-if="goodsData.isQingdan==-1" @click="addQingdan">+添加至清单</p>
               <p v-else class="pi">已加入常用清单</p>
             </div>
             <div class="succeed" v-show="tureFlag">
@@ -108,22 +111,25 @@
             </div>
             <div
               :class="detialIndex ? '' : 'bcshow'"
-              @click="detialIndex = false"
+              @click="goodPing"
             >
               商品评价
             </div>
           </div>
           <div v-if="detialIndex">
-            <img width="850px" src="../../assets/image/img_detial.png" alt="" />
+            <div v-show="noteImg.length != 0" v-for="(item2,index2) in noteImg" :key="index2"><img width="850px" :src="url+item2" alt="" /></div>
+            <div v-show="noteImg.length == 0" class="noDetial">
+              该商品暂无详情介绍
+            </div>
           </div>
           <div v-else class="comment">
-            <div class="comment_box" v-for="(item,index) in 5" :key="index">
+            <div v-show="pinglunList.length!=0" class="comment_box" v-for="(item,index) in pinglunList" :key="index">
               <div>
                 <div class="flex_sb comment_left">
-                <div><img src="../../assets/image/header.png" alt="" /></div>
+                <div><img :src="url+item.headimg_url" alt="" /></div>
                 <div class="com_name_box">
-                  <p class="ellipsis">我是你爸爸你爸哈哈爸</p>
-                  <p class="p1">2002-12-12</p>
+                  <p class="ellipsis">{{item.nick}}</p>
+                  <p class="p1">{{item.datetime | endData}}</p>
                 </div>
               </div>
               </div>
@@ -131,23 +137,31 @@
                 <!-- 五星评分 -->
                 <div class="good_ping">
                   <el-rate 
-                    v-model="xingValue"
+                    v-model="item.nice"
                     disabled
-                    show-score
+                    
                     text-color="#ff9900"
                   >
                   </el-rate>
                 </div>
-                <p>真不错，很新鲜的，发货速度超级快真不错，很新鲜的，发货速度超级快真不错，很新鲜的，发货速度超级快真不错，很新鲜的，发货速度超级快真不错，很新鲜的，发货速度超级快真不错，很新鲜的，发货速度超级快</p>
+                <p>{{item.content}}</p>
                 <div class=" img_box">
-                  <div><img style="width: 83px; height: 83px; object-fit: unset" src="../../assets/image/swper2.png" alt=""></div>
-                  <div><img style="width: 83px; height: 83px; object-fit: unset" src="../../assets/image/swper2.png" alt=""></div>
-                  <div><img style="width: 83px; height: 83px; object-fit: unset" src="../../assets/image/swper2.png" alt=""></div>
-                  <div><img style="width: 83px; height: 83px; object-fit: unset" src="../../assets/image/swper2.png" alt=""></div>
-                  <div><img style="width: 83px; height: 83px; object-fit: unset" src="../../assets/image/swper2.png" alt=""></div>
-                  <div><img style="width: 83px; height: 83px; object-fit: unset" src="../../assets/image/swper2.png" alt=""></div>
+                  <viewer :images="item.img_url">
+                      <img 
+                      
+                        v-for="(itemImg, indexImg) in item.img_url"
+                        :key="indexImg"
+                         style="width: 83px; height: 83px; object-fit: unset; margin-left:10px" 
+                        :src="url+itemImg"
+                        alt=""
+                      />
+                    </viewer>
+                  <!-- <div v-for="(item,index) in item.img" :key="index"><img  :src="url+item" alt=""></div> -->
                 </div>
               </div>
+            </div>
+            <div v-show="pinglunList.length==0" class="noDetial">
+               该商品暂无评论内容
             </div>
           </div>
         </div>
@@ -156,19 +170,19 @@
       <div class="right_box">
         <p class="title">为您推荐</p>
         <el-scrollbar style="height: 945px">
-          <div class="flex_sb ml" v-for="(item, index) in 20" :key="index">
-            <div>
+          <div class="flex_sb ml" :class="mlIndex==index ? 'mlgo':''" v-for="(item, index) in recommended" :key="index" @click="recommendClick(item,index)">
+            <div style="width: 120px; height: 120px; border: 1px solid #eeeeee;" class="flex_c">
               <img
-                style="width: 120px; height: 120px; object-fit: unset"
-                src="../../assets/image/dome.png"
+                style="width: 90px; height: 90px; object-fit: unset"
+                :src="url+item.img1_url"
                 alt=""
               />
             </div>
             <div class="right">
-              <p class="rigth_title text-line">
-                十月稻田 黑米1kg五谷杂粮十月稻田
+              <p class="rigth_title text-line" >
+               {{item.name}}
               </p>
-              <p class="right_maney"><span>￥190</span><s>￥155</s></p>
+              <p class="right_maney" ><span style="font-weight: bold;">₱{{item.xprice}}</span><s>₱{{item.yprice}}</s></p>
             </div>
           </div>
         </el-scrollbar>
@@ -180,30 +194,86 @@
 export default {
   data() {
     return {
-      big_img: "https://t7.baidu.com/it/u=1962848802,1705699489&fm=193&f=GIF",
-      imgPath: [
-        "https://t7.baidu.com/it/u=1962848802,1705699489&fm=193&f=GIF",
-        "https://t7.baidu.com/it/u=3863249326,4619162&fm=193&f=GIF",
-        "https://t7.baidu.com/it/u=2961328957,4241816621&fm=193&f=GIF",
-        "https://t7.baidu.com/it/u=340366643,1502786826&fm=193&f=GIF",
-        "https://t7.baidu.com/it/u=3470247674,3294276407&fm=193&f=GIF",
-        "https://t7.baidu.com/it/u=3241382419,346296150&fm=193&f=GIF",
-      ],
+      goodId:'',//商品Id
+      big_img: "", 
       num: 1, //商品数量
-      getDetailed: false, //添加清单
       detialIndex: true, //商品详情和商品评价切换
       tureFlag: false, //判断添加购物车成功
       xingValue:4,//星星评分
+      goodsData:{},//商品详情数据
+      noteImg:[],//商品详情图片
+      guigeIndex:0,//规格索引
+      guigeTotal:null,//库存
+      guigeId:'',//规格Id
+      pinglunList:[],//评论列表
+      newPage:1,
+      total:null,
+      recommended:[],//为你推荐
+      mlIndex:null,
     };
+  },
+ 
+  filters:{
+      endData(value){
+        value = value.substring(0,10)
+        return value
+      }
   },
   methods: {
     //   切换轮播图
     getImg(index) {
-      this.big_img = this.imgPath[index];
+      this.big_img = this.goodsData.img_url[index];
     },
     // 添加购物车
-    joinCart() {
-      this.tureFlag = true;
+    joinCart() { 
+        this.$require
+        .post(this.$inter.common.addTrolley, {
+          gid:this.goodId,
+          gsid:this.guigeId,
+          num:this.num
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) { 
+            this.$require
+        .post(this.$inter.common.getTrolley, {
+          page: this.myPage,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) { 
+             this.$store.commit("Trolley",res.data.total)
+          }
+        });
+          this.tureFlag = true; 
+          setTimeout(()=>{
+             this.tureFlag = false; 
+          },2000)
+          }
+        });
+    },
+    recommendClick(item,index){
+         console.log(item);
+         this.mlIndex= index
+         this.goodId = item.id
+         this.$require
+        .post(this.$inter.common.goodsDetial, {
+          goods_id: this.goodId,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) {
+            this.detialIndex = true
+            this.tureFlag = false
+            // console.log(this.imglist);
+            this.goodsData = res.data
+            this.big_img = res.data.img_url[0]
+            this.guigeTotal = res.data.size[0].total
+            this.guigeId = res.data.size[0].id
+            this.noteImg = res.data.note_url
+          }
+        });
+        this.goodsTuiJian()
     },
     // 增减数量
     handleChange(value) {
@@ -211,11 +281,98 @@ export default {
     },
     // 立即购买
     goBuy(){
-      console.log(11);
-       this.$router.push("/check_order")
-    }
+      console.log(11);  
+      var gid = JSON.stringify([""+this.goodId+""])
+      var size = JSON.stringify([""+this.guigeId+""]) 
+       this.$router.push({
+         path:"/check_order",
+         query:{
+           gid:gid,
+           size:size,
+           num:this.num,
+           type:2
+         }
+       })
+   
+    },
+    //选择规格
+    guigeClick(item,index){
+       this.guigeIndex = index 
+       this.guigeId = item.id
+       this.goodsData.xprice = item.xprice
+       this.goodsData.yprice = item.yprice
+       this.guigeTotal = item.total
+    },
+    // 添加至清单
+    addQingdan(){ 
+      this.$require
+        .post(this.$inter.common.addQingDan, {
+          common_id: this.goodId,
+          type:1
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) { 
+            console.log(this.goodsData);
+            this.goodsData.isQingdan = 1
+            console.log(this.goodsData.isQingdan);
+          }
+        });
+    },
+    // 商品评价
+    goodComment(){
+    this.$require
+        .post(this.$inter.common.goodComment, {
+          goods_id: this.goodId,
+          page:this.newPage 
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) { 
+           this.pinglunList = [...this.pinglunList,...res.data.items] 
+           this.total = res.data.total
+          }
+        });
+    },
+    // 商品评价
+    goodPing(){
+      this.pinglunList = []
+      this.detialIndex= false 
+       this.goodComment()
+    },
+     // 商品推荐
+    goodsTuiJian() {
+      this.$require
+        .post(this.$inter.common.recommendedGoods, {
+          page: this.recPage,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) {
+            this.recommended = res.data.items;
+          }
+        });
+    },
+      },
+  created() {
+    this.goodId = this.$route.query.id
+     this.$require
+        .post(this.$inter.common.goodsDetial, {
+          goods_id: this.goodId,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) {
+            // console.log(this.imglist);
+            this.goodsData = res.data
+            this.big_img = res.data.img_url[0]
+            this.guigeTotal = res.data.size[0].total
+            this.guigeId = res.data.size[0].id
+            this.noteImg = res.data.note_url
+          }
+        });
+        this.goodsTuiJian()
   },
-  created() {},
 };
 </script>
 <style lang="less" scoped>
@@ -224,11 +381,10 @@ export default {
   margin: auto;
   margin-top: 15px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; 
   .left_box {
     width: 850px;
     .top_box {
-      height: 550px;
       padding: 20px;
       box-sizing: border-box;
       .swper_box {
@@ -250,7 +406,6 @@ export default {
         }
       }
       .spec_box {
-        height: 550px;
         padding: 15px;
         box-sizing: border-box;
         .top_title {
@@ -270,11 +425,13 @@ export default {
           }
           .p2 {
             color: #666666;
+            width: 80px;
           }
           .p3 {
             font-size: 18px;
             color: #f10200;
             font-weight: bold;
+             width: 80px;
           }
         }
         .right {
@@ -316,16 +473,37 @@ export default {
         }
         .wei_list {
           display: flex;
-          width: 250px;
+          flex-wrap: wrap;
+          width: 300px;
+          margin-bottom: 10px;
           p {
-            margin: 0;
-            width: 100px;
+            position: relative;
+            margin:15px 0  0 10px;
+            min-width: 60px;
             height: 35px;
+            max-width: 300px;
+            padding: 0 20px 0 10px;
+            box-sizing: border-box;
             text-align: center;
             line-height: 35px;
             border: 1px solid #bfbfbf;
-            margin-left: 15px;
             cursor: pointer;
+          }
+          .abxuan{
+            position: absolute;
+            height: 13px;
+            right: -1px;
+            bottom: 0;
+            z-index: 99;
+           
+          }
+          p:hover{
+            color: #ff61a1;
+            border: 1px solid #ff61a1;
+          }
+          .phover{
+            color: #ff61a1;
+            border: 1px solid #ff61a1;
           }
         }
       }
@@ -399,7 +577,7 @@ export default {
     }
   }
   .right_box {
-    width: 330px;
+    width: 335px;
     height: 1000px;
     background-color: #fff;
     /deep/.el-scrollbar__wrap {
@@ -407,9 +585,19 @@ export default {
     }
   }
   .ml {
-    margin-left: 15px;
+     width: 330px;
+    margin-left: 3px;
     margin-top: 15px;
+    padding: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
   }
+  .ml:hover{
+       box-shadow: 0px 0px 3px 0px #ff61a1;  
+  }
+   .mlgo{
+     outline: 1px solid #ff61a1;
+   }
   .title {
     color: #333333;
     font-weight: Bold;
@@ -428,6 +616,7 @@ export default {
       width: 170px;
       font-size: 14px;
       color: #333333;
+      margin-bottom: 50px;
     }
     .right_maney {
       span {
@@ -453,8 +642,10 @@ export default {
   }
 }
 .comment {
-  background-color: #fff; 
+    // background-color: #fff;
+   
   .comment_box {
+    background-color: #fff;
     padding: 25px;
     box-sizing: border-box;
     display: flex;
@@ -502,5 +693,11 @@ export default {
       }
     }
   }
+}
+.noDetial{
+  color: #999999;
+  font-size: 14px;
+  margin-top: 50px;
+  text-align: center;
 }
 </style>

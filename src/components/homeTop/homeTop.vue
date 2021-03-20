@@ -4,12 +4,14 @@
     <div style="background-color: #ededed">
       <div class="top_nav flex_sb">
         <div class="flex_sa left_box">
-          <p @click="toLogin">立即登录</p>
+          <p class="p1" @click="myYouzhijia" v-if="USER_INFO">{{nick}}</p>
+          <p @click="toLogin" v-else >立即登录</p>
           <div>|</div>
-          <p @click="toReg">注册</p>
+          <p @click="clearInfo"  v-if="USER_INFO">退出</p>
+          <p @click="toReg" v-else>注册</p>
         </div>
         <ul class="flex_sa right_box">
-          <li>我的优之家</li>
+          <li @click="myYouzhijia">我的优之家</li>
           <li>|</li>
           <li class="flex_c">
             <img
@@ -17,17 +19,17 @@
               src="../../assets/image/chqi.png"
               alt=""
             />
-            <p>购物车(0)</p>
+            <p @click="goCart" >购物车<span v-show="total">({{total}})</span></p>
           </li>
           <li>|</li>
-          <li>我的消息</li>
+          <li @click="myMessage">我的消息</li>
           <li>|</li>
           <el-popover
             placement="bottom"
             width="110"
             trigger="click" 
           >
-          <div style="text-align:center"><img style="width:110px height:110px object-fit: unset;" src="../../assets/image/erweima.png" alt=""></div>
+          <div class="phoneApp" style="text-align:center"><img width="110px" style="width:110px height:110px object-fit: unset;" src="../../assets/image/erweima.png" alt=""></div>
            <li slot="reference" @click="phoneApp">手机APP</li>
           </el-popover>
          
@@ -37,11 +39,35 @@
   </div>
 </template>
 <script>
+  import { mapState } from 'vuex'
+
 export default {
   data() {
-    return {};
+    return {
+      total:null,
+      nick:"",
+    };
   },
+  computed: {
+      ...mapState(["trolley","myname"])
+    },
+    watch:{
+      trolley(newVal,oldVal){
+             if(this.trolley){
+            this.total = newVal
+    }
+      },
+      myname(newVal,oldVal){
+        console.log(newVal);
+       this.nick = newVal
+      }
+    },
   methods: {
+    //退出
+    clearInfo(){
+      localStorage.clear()
+      this.$router.push("/login")
+    },
     //  跳登录
     toLogin() {
       this.$router.push("/login");
@@ -50,10 +76,61 @@ export default {
     toReg() {
       this.$router.push("/register");
     },
-    //  手机二维码
+    // 我的消息
+    myMessage(){
+       if(this.USER_INFO){
+         this.$store.commit("myMessage",true)
+     this.$router.push({
+        path:"/my_message",
+        query:{
+          idx:12
+        }
+      }); 
+      }else{
+        this.$message.error("请先登录")
+      }
+   
+    },
+    // 购物车
+    goCart(){ 
+     if(this.USER_INFO){
+  this.$router.push("/shopping_cart")
+      }else{
+        this.$message.error("请先登录")
+      }
+    },
+    // 我的优之家
+    myYouzhijia(){
+      if(this.USER_INFO){
+  this.$router.push({  
+        path:"/myYouZhiJia"
+      });
+      }else{
+       this.$router.push({
+        path:"/login"
+      });
+      }
+       
+    },
+    //  手机二维码s
     phoneApp() {},
   },
-  created() {},
+  created() {
+    console.log(this.trolley);
+   
+     this.USER_INFO = JSON.parse(localStorage.getItem("USER_INFO"));
+     this.nick = this.USER_INFO.nick
+      this.$require
+        .post(this.$inter.common.getTrolley, {
+          page: this.myPage,
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.code == 1) { 
+          this.total = res.data.total
+          }
+        });
+  },
 };
 </script>
 <style lang="less">
@@ -69,6 +146,9 @@ export default {
     p {
       cursor: pointer;
     }
+    .p1{
+        color:  #FF61A1;
+    }
   }
   .right_box {
     width: 350px;
@@ -82,5 +162,9 @@ export default {
   }
   }
  
+}
+.phoneApp{
+  padding: 10px 0 10px 0;
+  border: 1px solid #eeeeee;
 }
 </style>

@@ -10,6 +10,9 @@
         font-size: 12px;
         color: #999999;
         text-align: center;
-        margin-top: 100px;
+        height: 100px;
+        line-height: 100px;
+        background-color: #FAFAFA;
+        margin-top: 40px;
     }
 </style>
