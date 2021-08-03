@@ -81,6 +81,21 @@ const routes = [
     component: () => import('../views/personal_my/my_message.vue')
   },
   {
+    path: '/my_income',//我的收益
+    name: 'myIncome', 
+    component: () => import('../views/personal_my/my_income.vue')
+  },
+  {
+    path: '/team',//我的团队
+    name: 'team', 
+    component: () => import('../views/personal_my/my_tuandui.vue')
+  },
+  {
+    path: '/team_detial',//我的团队详情
+    name: 'teamDetial', 
+    component: () => import('../views/personal_my/tuandui_detial.vue')
+  },
+  {
     path: '/myYouZhiJia',//我的优之家
     name: 'myYouZhiJia', 
     component: () => import('../views/personal_my/myYouZhiJia.vue')
@@ -109,7 +124,7 @@ const routes = [
 
 const router = new VueRouter({
   // mode: 'history',
-  base: process.env.BASE_URL,
+  base: process.env.BASE_URL, 
   routes
 })
 

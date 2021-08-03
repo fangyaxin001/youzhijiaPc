@@ -29,8 +29,10 @@
             width="110"
             trigger="click" 
           >
-          <div class="phoneApp" style="text-align:center"><img width="110px" style="width:110px height:110px object-fit: unset;" src="../../assets/image/erweima.png" alt=""></div>
-           <li slot="reference" @click="phoneApp">手机APP</li>
+          <div v-if="!user_id" class="phoneApp" style="text-align:center"><img width="110px" style="width:110px height:110px object-fit: unset;" src="../../assets/image/erweima.png" alt=""></div>
+          <div  v-else class="phoneApp" style="text-align:center"><img width="110px" style="width:110px height:110px object-fit: unset;" :src="condeImg" alt=""></div>
+           <li slot="reference" @click="phoneApp" v-if="!user_id">手机APP</li>
+           <li slot="reference" @click="phoneApp" v-else>分享二维码</li>
           </el-popover>
          
         </ul>
@@ -46,6 +48,8 @@ export default {
     return {
       total:null,
       nick:"",
+      user_id:'',
+      condeImg:'',
     };
   },
   computed: {
@@ -75,6 +79,18 @@ export default {
     //   跳注册
     toReg() {
       this.$router.push("/register");
+    },
+    // 获取分享维码
+    getCode(){
+  this.$require
+        .post(this.$inter.common.getCode, {
+          user_id: this.user_id
+         
+        })
+        .then((res) => {
+      console.log(res)
+      this.condeImg = res.data.invitation_code_url
+        })
     },
     // 我的消息
     myMessage(){
@@ -117,7 +133,7 @@ export default {
   },
   created() {
     console.log(this.trolley);
-   
+     this.user_id = JSON.parse(localStorage.getItem("is_userId")); 
      this.USER_INFO = JSON.parse(localStorage.getItem("USER_INFO"));
      this.nick = this.USER_INFO.nick
       this.$require
@@ -130,6 +146,7 @@ export default {
           this.total = res.data.total
           }
         });
+        this.getCode()
   },
 };
 </script>

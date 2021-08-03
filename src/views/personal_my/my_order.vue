@@ -90,7 +90,7 @@
                   </p>
                   <p
                     class="p1"
-                    v-show="item.status !=6&&item.status ==4"
+                    v-show="item.status !=6&&item.status ==4&&item.sub_servants_status==0"
                     @click="apply(item)"
                   >
                     申请售后

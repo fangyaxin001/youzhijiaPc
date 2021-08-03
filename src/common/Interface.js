@@ -54,6 +54,15 @@ const common = {
     Goods:"/apis/order/Goods",//确认收货
     aboutUs:"/apis/my/aboutUs",//关于我们 ，用户协议 
     
+
+    // 新增
+    detialMinxi:"/apis/my/getMinXi",//余额明细
+    myteam:"/apis/my/getMyTeam",//我的团队 
+    myteamDetial:"/apis/my/getMyTeamdata",//我的团队
+    myBrokerage:"/apis/my/coinExpand",//我的佣金&佣金说明
+    getCode:"/apis/Qrcodes/getQrcode",//获取分享二维码
+    
+    
 }
 
   

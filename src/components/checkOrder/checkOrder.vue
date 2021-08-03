@@ -103,6 +103,12 @@
               <span v-else>₱{{ allDiyong }}</span>
             </p>
           </div>
+           <div class="jin_e">
+            <p>
+              佣金抵用：<span v-if="couponList.length == 0">₱ 0.00</span>
+              <span v-else>₱{{ All_obj.coin_pay }}</span>
+            </p>
+          </div>
         </div>
       </div>
       <!-- 提交订单 -->
@@ -476,7 +482,7 @@ export default {
       .then((res) => {
         console.log(res);
         if (res.code == 1) {
-          this.All_obj = res.data;
+          this.All_obj = res.data; 
           this.orderDatial = res.data.items.goods; 
           this.$require
             .post(this.$inter.common.couponsNice, {

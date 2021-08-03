@@ -28,6 +28,7 @@
          <p>商品总额总价：₱ {{orderData.sum}}</p>
          <p>运费：₱ {{orderData.cost}}</p>
          <p>优惠折扣：-₱ {{orderData.coupons}}</p>
+         <p>抵扣金额：-₱ {{orderData.commission_deductions}}</p>
          <p>实际支付：₱ {{orderData.paymoney}}</p>
          <p>订单号：{{order.order_num}}</p>
          <p>下单时间：{{orderData.addtime}}</p>

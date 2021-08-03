@@ -5,11 +5,12 @@
       <div class="classify_box">
         <div class="classify_list">
           <p class="fenlei" :class="styleFlag ? 'bto_bor' : ''">分类:</p>
-          <ul :class="styleFlag ? 'bto_bor' : ''">
+          <ul  style="display: flex; align-items: center; " :class="styleFlag ? 'bto_bor' : ''">
             <li :class="allGoods ? 'all_goods' : ''" @click="myallGoods">
               全部
             </li>
             <div class="scoll">
+                <el-scrollbar style="height:100%"> 
               <li
                 :class="navIndex == index ? 'hove_set' : ''"
                 :style="{ color: titleIndex == index ? '#ff61a1' : '' }"
@@ -20,6 +21,7 @@
               >
                 {{ item.name }}
               </li>
+               </el-scrollbar>
             </div>
           </ul>
         </div>
@@ -113,7 +115,7 @@ export default {
     //  鼠标离开
     LeaveliCkick() {
       this.navIndex = null;
-      this.styleFlag = false;
+      // this.styleFlag = false;
     },
     lookDetial(item) {
       if (this.USER_INFO) {
@@ -141,6 +143,7 @@ export default {
       this.newPages = 1;
       this.allGoods = true;
       this.titleIndex = null;
+       this.styleFlag = false;
       this.goodsFrom();
     },
     // 分类
@@ -239,21 +242,21 @@ export default {
 }
 .classify_list {
   display: flex;
-  align-items: center;
+  align-items: center; 
   margin-top: 15px;
   background-color: #fff;
-  overflow: hidden;
+  overflow: hidden; 
   .fenlei {
     width: 70px;
-    text-align: center;
-    height: 51px;
-    line-height: 50px;
+    text-align: center; 
     margin: 0;
+    height: 51px; 
+    line-height: 50px;
   }
   p {
     color: #999999;
   }
-  ul {
+  ul { 
     width: 1130px;
     font-size: 14px;
     color: #666666;
@@ -319,6 +322,9 @@ export default {
 // 滚动
 .scoll {
   display: inline-block;
-  width: 1060px;
+  width: 1060px; 
 }
+/deep/.el-scrollbar__wrap{
+  overflow-y:hidden !important ;
+  }
 </style>

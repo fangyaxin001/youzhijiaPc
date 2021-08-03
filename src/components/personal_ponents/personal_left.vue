@@ -8,6 +8,7 @@
           <div v-show="index == 7">  <main v-show="leftIndex>6 && leftIndex<9"></main> <p :class="leftIndex>6 && leftIndex<9 ? 'style_color':''" >我的优惠</p></div>
           <div v-show="index == 9">  <main v-show="leftIndex>8 && leftIndex<12"></main> <p :class="leftIndex>8 && leftIndex<12 ? 'style_color':''"  >我的服务</p></div>
           <div v-show="index == 12"> <main v-show="leftIndex>11 && leftIndex<13"></main> <p :class="leftIndex>11 && leftIndex<13 ? 'style_color':''" >我的消息</p></div>
+          <div v-show="index == 13"> <main v-show="leftIndex>12 && leftIndex<15"></main> <p :class="leftIndex>12 && leftIndex<15 ? 'style_color':''" >我的收益</p></div>
           <p class="p_li" :class="leftIndex==index? 'style_color':''" @click="getIndex(index)">{{ item }}</p>
         </li>
       </ul>
@@ -33,6 +34,8 @@ export default {
         "我的足迹",
         "新品需求",
         "我的消息",
+        "余额明细",
+        "我的团队",
       ],
       leftIndex:0,//导航索引
     };
@@ -69,6 +72,24 @@ export default {
              this.$emit('leftIndex', indexFlag)
             this.$router.push({
               path:"/my_message",
+              query:{
+                idx:index,
+              }
+            })
+          }else if(index==13){
+           var indexFlag={idx:index,flag:true}
+             this.$emit('leftIndex', indexFlag)
+            this.$router.push({
+              path:"/my_income",
+              query:{
+                idx:index,
+              }
+            })
+          }else if(index==14){
+           var indexFlag={idx:index,flag:true}
+             this.$emit('leftIndex', indexFlag)
+            this.$router.push({
+              path:"/team",
               query:{
                 idx:index,
               }
